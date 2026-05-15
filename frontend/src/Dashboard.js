@@ -78,7 +78,7 @@ export default function Dashboard({ token, logout }) {
         file
       );
 
-      await axios.post(
+      await api.post(
         "/api/upload",
         formData,
         {
@@ -381,7 +381,7 @@ export default function Dashboard({ token, logout }) {
 
                   try {
 
-                    await axios.put(
+                    await api.put(
 
                       `/api/upload/reminder/${p._id}/${idx}`,
 
