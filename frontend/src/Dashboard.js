@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "./api";
 
 export default function Dashboard({ token, logout }) {
 
@@ -36,8 +36,8 @@ export default function Dashboard({ token, logout }) {
 
     try {
 
-      const res = await axios.get(
-        "http://localhost:5001/api/upload/all",
+      const res = await api.get(
+        "/api/upload/all",
         {
           headers: {
             Authorization:
@@ -79,7 +79,7 @@ export default function Dashboard({ token, logout }) {
       );
 
       await axios.post(
-        "http://localhost:5001/api/upload",
+        "/api/upload",
         formData,
         {
           headers: {
@@ -115,9 +115,9 @@ export default function Dashboard({ token, logout }) {
 
     try {
 
-      const res = await axios.get(
+      const res = await api.get(
 
-        `http://localhost:5001/api/upload/medicine-availability?name=${medicineName}`
+        `/api/upload/medicine-availability?name=${medicineName}`
 
       );
 
@@ -148,9 +148,9 @@ export default function Dashboard({ token, logout }) {
 
     try {
 
-      const res = await axios.get(
+      const res = await api.get(
 
-        `http://localhost:5001/api/upload/medicine-price?name=${medicineName}`
+        `api/upload/medicine-price?name=${medicineName}`
 
       );
 
@@ -383,7 +383,7 @@ export default function Dashboard({ token, logout }) {
 
                     await axios.put(
 
-                      `http://localhost:5001/api/upload/reminder/${p._id}/${idx}`,
+                      `/api/upload/reminder/${p._id}/${idx}`,
 
                       {
 

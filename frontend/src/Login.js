@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "./api";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -13,28 +13,28 @@ export default function Login() {
 
     try {
 
-      const res = await axios.post(
-        "http://localhost:5001/api/auth/login",
+      const res = await api.post(
+        "/api/auth/login",
         {
           email,
           password
         }
       );
 
-    localStorage.setItem(
-  "token",
-  res.data.token
-);
+      localStorage.setItem(
+        "token",
+        res.data.token
+      );
 
-localStorage.setItem(
-  "user",
-  JSON.stringify(res.data.user)
-);
+      localStorage.setItem(
+        "user",
+        JSON.stringify(res.data.user)
+      );
 
-alert("Login successful");
+      alert("Login successful");
 
-// Force refresh after login
-window.location.href = "/dashboard";
+      window.location.href = "/dashboard";
+
     } catch (error) {
 
       console.log(error);

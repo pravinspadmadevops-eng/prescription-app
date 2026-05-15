@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "./api";
 import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
@@ -15,7 +15,7 @@ export default function Signup() {
     try {
 
       const res = await axios.post(
-        "http://localhost:5001/api/auth/signup",
+        "/api/auth/login",
         {
           name,
           email,
