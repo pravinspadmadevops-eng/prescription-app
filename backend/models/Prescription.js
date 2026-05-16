@@ -29,6 +29,15 @@ const medicineSchema = new mongoose.Schema({
 });
 
 const prescriptionSchema = new mongoose.Schema({
+user: {
+
+    type: mongoose.Schema.Types.ObjectId,
+
+    ref: "User",
+
+    required: true
+
+  },
   patientName: String,
   doctorName: String,
   hospitalName: String,
@@ -45,5 +54,7 @@ const prescriptionSchema = new mongoose.Schema({
     default: Date.now
   }
 });
+
+
 
 module.exports = mongoose.model('Prescription', prescriptionSchema);

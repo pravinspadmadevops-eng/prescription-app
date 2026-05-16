@@ -3,14 +3,16 @@ import api from "./api";
 
 export default function Dashboard({ token, logout }) {
 
-  const [priceData, setPriceData] = useState({});
-  const [availability, setAvailability] = useState({});
+  // =========================
+  // STATES
+  // =========================
+
   const [file, setFile] = useState(null);
   const [userName, setUserName] = useState("");
   const [prescriptions, setPrescriptions] = useState([]);
 
   // =========================
-  // Load User + Prescriptions
+  // LOAD USER + PRESCRIPTIONS
   // =========================
 
   useEffect(() => {
@@ -29,7 +31,7 @@ export default function Dashboard({ token, logout }) {
   }, []);
 
   // =========================
-  // Fetch Prescriptions
+  // FETCH PRESCRIPTIONS
   // =========================
 
   const fetchPrescriptions = async () => {
@@ -59,7 +61,7 @@ export default function Dashboard({ token, logout }) {
   };
 
   // =========================
-  // Upload Prescription
+  // UPLOAD PRESCRIPTION
   // =========================
 
   const upload = async () => {
@@ -105,92 +107,6 @@ export default function Dashboard({ token, logout }) {
 
   };
 
-  // =========================
-  // Check Availability
-  // =========================
-
-  const checkAvailability = async (
-    medicineName
-  ) => {
-
-    try {
-
-      const res = await api.get(
-
-        `/api/upload/medicine-availability?name=${medicineName}`
-
-      );
-
-      setAvailability(prev => ({
-
-        ...prev,
-
-        [medicineName]:
-          res.data.available
-
-      }));
-
-    } catch (error) {
-
-      console.log(error);
-
-    }
-
-  };
-
-  // =========================
-  // Fetch Price Comparison
-  // =========================
-
-  const fetchMedicinePrices = async (
-    medicineName
-  ) => {
-
-    try {
-
-      const res = await api.get(
-
-        `api/upload/medicine-price?name=${medicineName}`
-
-      );
-
-      setPriceData(prev => ({
-
-        ...prev,
-
-        [medicineName]:
-          res.data.prices
-
-      }));
-
-    } catch (error) {
-
-      console.log(error);
-
-    }
-
-  };
-
-  // =========================
-  // Auto Load Availability
-  // =========================
-
-  useEffect(() => {
-
-    prescriptions.forEach((p) => {
-
-      p.medicines?.forEach((m) => {
-
-        checkAvailability(m.name);
-
-        fetchMedicinePrices(m.name);
-
-      });
-
-    });
-
-  }, [prescriptions]);
-
   return (
 
     <div style={styles.container}>
@@ -220,7 +136,7 @@ export default function Dashboard({ token, logout }) {
 
       </div>
 
-      {/* QUICK ACTIONS */}
+      {/* UPLOAD SECTION */}
 
       <div style={styles.cardRow}>
 
@@ -247,8 +163,6 @@ export default function Dashboard({ token, logout }) {
           </button>
 
         </div>
-
-        
 
       </div>
 
@@ -310,7 +224,7 @@ export default function Dashboard({ token, logout }) {
                 {m.timing || "N/A"}
               </p>
 
-              {/* Reminder */}
+              {/* REMINDER SECTION */}
 
               <h4>
                 Set Reminder
@@ -335,7 +249,7 @@ export default function Dashboard({ token, logout }) {
                   let nextReminderDate =
                     new Date();
 
-                  // Weekly
+                  // WEEKLY
 
                   if (
                     type === "weekly"
@@ -348,7 +262,7 @@ export default function Dashboard({ token, logout }) {
 
                   }
 
-                  // 15 Days
+                  // EVERY 15 DAYS
 
                   if (
                     type === "15days"
@@ -361,7 +275,7 @@ export default function Dashboard({ token, logout }) {
 
                   }
 
-                  // Monthly
+                  // MONTHLY
 
                   if (
                     type === "monthly"
@@ -435,107 +349,11 @@ export default function Dashboard({ token, logout }) {
 
               </select>
 
-              {/* Reminder Details */}
+              {/* REMINDER DETAILS */}
 
               {m.reminderType && (
 
                 <div style={styles.reminderBox}>
-
-                  
-
-                  {/* PRICE COMPARISON */}
-
-                  {priceData[m.name] && (
-
-                    <div
-                      style={
-                        styles.priceBox
-                      }
-                    >
-
-                      <h4>
-                        Price Comparison
-                      </h4>
-
-                      <p>
-                        Tata 1mg:
-                        {" "}
-                        ₹
-                        {
-                          priceData[
-                            m.name
-                          ].tata1mg.price
-                        }
-                        {" "}
-                        {
-                          priceData[
-                            m.name
-                          ].tata1mg.stock
-                            ? "✅"
-                            : "❌"
-                        }
-                      </p>
-
-                      <p>
-                        PharmEasy:
-                        {" "}
-                        ₹
-                        {
-                          priceData[
-                            m.name
-                          ].pharmeasy.price
-                        }
-                        {" "}
-                        {
-                          priceData[
-                            m.name
-                          ].pharmeasy.stock
-                            ? "✅"
-                            : "❌"
-                        }
-                      </p>
-
-                      <p>
-                        Netmeds:
-                        {" "}
-                        ₹
-                        {
-                          priceData[
-                            m.name
-                          ].netmeds.price
-                        }
-                        {" "}
-                        {
-                          priceData[
-                            m.name
-                          ].netmeds.stock
-                            ? "✅"
-                            : "❌"
-                        }
-                      </p>
-
-                      <p>
-                        Truemeds:
-                        {" "}
-                        ₹
-                        {
-                          priceData[
-                            m.name
-                          ].truemeds.price
-                        }
-                        {" "}
-                        {
-                          priceData[
-                            m.name
-                          ].truemeds.stock
-                            ? "✅"
-                            : "❌"
-                        }
-                      </p>
-
-                    </div>
-
-                  )}
 
                   <p>
 
@@ -568,48 +386,6 @@ export default function Dashboard({ token, logout }) {
 
               )}
 
-              {/* BUY BUTTONS */}
-
-              <div style={styles.buyRow}>
-
-  <a
-    href={`https://www.1mg.com/search/all?name=${m.name}`}
-    target="_blank"
-    rel="noreferrer"
-    style={styles.buyBtn}
-  >
-    🛒 Tata 1mg
-  </a>
-
-  <a
-    href={`https://pharmeasy.in/search/all?name=${m.name}`}
-    target="_blank"
-    rel="noreferrer"
-    style={styles.buyBtn}
-  >
-    💊 PharmEasy
-  </a>
-
-  <a
-    href={`https://www.netmeds.com/catalogsearch/result/${m.name}`}
-    target="_blank"
-    rel="noreferrer"
-    style={styles.buyBtn}
-  >
-    🏥 Netmeds
-  </a>
-
-  <a
-    href={`https://www.truemeds.in/search/${m.name}`}
-    target="_blank"
-    rel="noreferrer"
-    style={styles.buyBtn}
-  >
-    ✅ Truemeds
-  </a>
-
-</div>
-
             </div>
 
           ))}
@@ -624,16 +400,18 @@ export default function Dashboard({ token, logout }) {
 
 }
 
-/* STYLES */
+/* =========================
+   STYLES
+========================= */
 
 const styles = {
 
   container: {
-  padding: 20,
-  fontFamily: "Arial",
-  background: "#f3f4f6",
-  minHeight: "100vh"
-},
+    padding: 20,
+    fontFamily: "Arial",
+    background: "#f3f4f6",
+    minHeight: "100vh"
+  },
 
   header: {
 
@@ -674,7 +452,9 @@ const styles = {
 
     border: "1px solid #ddd",
 
-    borderRadius: 10
+    borderRadius: 10,
+
+    background: "white"
 
   },
 
@@ -690,7 +470,9 @@ const styles = {
 
     border: "none",
 
-    borderRadius: 5
+    borderRadius: 5,
+
+    cursor: "pointer"
 
   },
 
@@ -702,7 +484,9 @@ const styles = {
 
     marginBottom: 15,
 
-    borderRadius: 10
+    borderRadius: 10,
+
+    background: "white"
 
   },
 
@@ -714,46 +498,33 @@ const styles = {
 
     marginTop: 10,
 
-    borderRadius: 8
+    borderRadius: 8,
+
+    background: "#fafafa"
 
   },
 
+  reminderBox: {
 
-    reminderBox: {
-  marginTop: 15,
-  padding: 15,
-  background: "#ffffff",
-  border: "1px solid #e5e7eb",
-  borderRadius: 12,
-  boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-  display: "flex",
-  flexDirection: "column",
-  gap: 10
-},
+    marginTop: 15,
 
- priceBox: {
-  marginTop: 10,
-  padding: 12,
-  background: "#f9fafb",
-  border: "1px solid #dbeafe",
-  borderRadius: 10
-},
+    padding: 15,
 
-  buyRow: {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: 10,
-  marginTop: 15
-},
+    background: "#ffffff",
 
-buyBtn: {
-  padding: "8px 14px",
-  background: "#2563eb",
-  color: "white",
-  textDecoration: "none",
-  borderRadius: 8,
-  fontSize: 14,
-  fontWeight: "bold"
-},
+    border: "1px solid #e5e7eb",
+
+    borderRadius: 12,
+
+    boxShadow:
+      "0 2px 8px rgba(0,0,0,0.05)",
+
+    display: "flex",
+
+    flexDirection: "column",
+
+    gap: 10
+
+  }
 
 };
