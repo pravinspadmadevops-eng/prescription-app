@@ -19,10 +19,10 @@ services:
     ports:
       - "3000:3000"
 
-mongo:
-  image: mongo
+  mongo:
+    image: mongo
+    volumes:
+      - mongo-data:/data/db
+
   volumes:
-    - mongo-data:/data/db
-    
-volumes:
-  mongo-data:
+    mongo-data:
