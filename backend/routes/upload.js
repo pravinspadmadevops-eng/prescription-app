@@ -5,6 +5,7 @@
 const express = require('express');
 const multer = require('multer');
 const axios = require('axios');
+const protect = require('../middleware/authMiddleware');
 
 const {
   readFileSync,
@@ -60,6 +61,7 @@ function formatTiming(t) {
 
 router.post(
   '/',
+  protect,
   upload.single('file'),
   async (req, res) => {
 
@@ -506,6 +508,7 @@ router.get(
 
 router.get(
   '/',
+  protect,
   async (req, res) => {
 
     try {
@@ -545,6 +548,7 @@ router.get(
 
 router.get(
   '/medicines',
+  protect,
   async (req, res) => {
 
     try {
@@ -589,6 +593,7 @@ router.get(
 
 router.get(
   '/all',
+  protect,
   async (req, res) => {
 
     try {
@@ -627,6 +632,7 @@ router.get(
 
 router.put(
   "/reminder/:prescriptionId/:medicineIndex",
+  protect,
   async (req, res) => {
 
     try {

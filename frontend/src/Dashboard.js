@@ -28,7 +28,7 @@ export default function Dashboard({ token, logout }) {
 
     fetchPrescriptions();
 
-  }, []);
+  }, [token]);
 
   // =========================
   // FETCH PRESCRIPTIONS
@@ -40,12 +40,7 @@ export default function Dashboard({ token, logout }) {
 
       const res = await api.get(
         "/api/upload/all",
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`
-          }
-        }
+        
       );
 
       setPrescriptions(
@@ -80,16 +75,8 @@ export default function Dashboard({ token, logout }) {
         file
       );
 
-      await api.post(
-        "/api/upload",
-        formData,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`
-          }
-        }
-      );
+      await api.post("/api/upload/all");
+        
 
       alert(
         "Uploaded Successfully ✅"
@@ -301,11 +288,9 @@ export default function Dashboard({ token, logout }) {
 
                       {
 
-                        reminderType:
-                          type,
+                        reminderType: type,
 
-                        nextReminderDate:
-                          formattedDate
+                        nextReminderDate: formattedDate
 
                       }
 

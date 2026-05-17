@@ -1,48 +1,113 @@
 import { useState } from "react";
-import api from "./api";
-import { useNavigate } from "react-router-dom";
+
+import {
+  getAuth,
+  RecaptchaVerifier,
+  signInWithPhoneNumber
+} from "firebase/auth";
+
+import { app } from "./firebase";
+
+const auth = getAuth(app);
 
 export default function Login() {
 
-  const navigate = useNavigate();
+  const [phone, setPhone] =
+    useState("");
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [otp, setOtp] =
+    useState("");
 
-  const login = async () => {
+  const [confirmationResult,
+    setConfirmationResult] =
+    useState(null);
+
+  // =========================
+  // SEND OTP
+  // =========================
+
+  const sendOTP = async () => {
 
     try {
 
-      const res = await api.post(
-        "/api/auth/login",
-        {
-          email,
-          password
-        }
-      );
+      window.recaptchaVerifier =
+        new RecaptchaVerifier(
 
-      localStorage.setItem(
-        "token",
-        res.data.token
-      );
+          auth,
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify(res.data.user)
-      );
+          "recaptcha-container",
 
-      alert("Login successful");
+          {
+            size: "normal"
+          }
 
-      window.location.href = "/dashboard";
+        );
+
+      const appVerifier =
+        window.recaptchaVerifier;
+
+      const result =
+        await signInWithPhoneNumber(
+
+          auth,
+          phone,
+          appVerifier
+
+        );
+
+      setConfirmationResult(result);
+
+      alert("OTP Sent");
 
     } catch (error) {
 
       console.log(error);
 
-      alert(
-        error.response?.data?.message ||
-        "Login failed"
+      alert(error.message);
+
+    }
+
+  };
+
+  // =========================
+  // VERIFY OTP
+  // =========================
+
+  const verifyOTP = async () => {
+
+    try {
+
+      const result =
+        await confirmationResult.confirm(otp);
+
+      const user =
+        result.user;
+
+      const token =
+        await user.getIdToken();
+
+      localStorage.setItem(
+        "token",
+        token
       );
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          phone: user.phoneNumber
+        })
+      );
+
+      alert("Login Success");
+
+      window.location.href =
+        "/dashboard";
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert("Invalid OTP");
 
     }
 
@@ -52,48 +117,57 @@ export default function Login() {
 
     <div
       style={{
-        width: "300px",
-        margin: "100px auto",
-        display: "flex",
-        flexDirection: "column",
-        gap: "10px"
+        padding: 40
       }}
     >
 
-      <h2>Login</h2>
+      <h2>
+        Mobile Login
+      </h2>
 
       <input
-        placeholder="Email"
-        value={email}
+
+        type="text"
+
+        placeholder="+919876543210"
+
+        value={phone}
+
         onChange={(e) =>
-          setEmail(e.target.value)
+          setPhone(e.target.value)
         }
+
       />
+
+      <br /><br />
+
+      <button onClick={sendOTP}>
+        Send OTP
+      </button>
+
+      <br /><br />
 
       <input
-        type="password"
-        placeholder="Password"
-        value={password}
+
+        type="text"
+
+        placeholder="Enter OTP"
+
+        value={otp}
+
         onChange={(e) =>
-          setPassword(e.target.value)
+          setOtp(e.target.value)
         }
+
       />
 
-      <button onClick={login}>
-        Login
+      <br /><br />
+
+      <button onClick={verifyOTP}>
+        Verify OTP
       </button>
 
-      <p>
-        Don't have an account?
-      </p>
-
-      <button
-        onClick={() =>
-          navigate("/signup")
-        }
-      >
-        Signup
-      </button>
+      <div id="recaptcha-container"></div>
 
     </div>
 

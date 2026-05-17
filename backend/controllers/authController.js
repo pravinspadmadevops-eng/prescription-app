@@ -119,4 +119,62 @@ exports.login = async (req, res) => {
 
   }
 
+}; 
+
+// =========================
+// Mobile OTP Login
+// =========================
+ 
+exports.mobileLogin = async (req, res) => {
+
+  try {
+
+    const { phone } = req.body;
+
+    if (!phone) {
+
+      return res.status(400).json({
+        error: "Phone number required"
+      });
+
+    }
+
+    // Check existing user
+    let user = await User.findOne({ phone });
+
+    // Create user if not exists
+    if (!user) {
+
+      user = await User.create({
+        name: phone,
+        email: `${phone}@mobile.com`,
+        password: "mobile-login",
+        phone
+      });
+
+    }
+
+    // JWT Token
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      success: true,
+      token,
+      user
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      error: error.message
+    });
+
+  }
+
 };
