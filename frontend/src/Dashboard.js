@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import api from "./api";
 
+const token = localStorage.getItem("token");
+
 export default function Dashboard({ token, logout }) {
 
   // =========================
