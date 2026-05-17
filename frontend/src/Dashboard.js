@@ -77,7 +77,15 @@ export default function Dashboard({ token, logout }) {
         file
       );
 
-      await api.post("/api/upload/all");
+      await api.post("/api/upload",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
         
 
       alert(
