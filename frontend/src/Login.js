@@ -20,85 +20,82 @@ export default function Login() {
   // =========================
   const sendOTP = async () => {
     try {
+    if (!phone.startsWith("+")) {
+      alert("Use +91XXXXXXXXXX format");
+      return;
+    }
 
-      if (!phone.startsWith("+")) {
-        alert("Enter number with country code (+91...)");
-        return;
+    // IMPORTANT: destroy old verifier
+    if (window.recaptchaVerifier) {
+      window.recaptchaVerifier.clear();
+      window.recaptchaVerifier = null;
+    }
+
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      auth,
+      "recaptcha-container",
+      {
+        size: "invisible"
       }
+    );
 
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(
-          auth,
-          "recaptcha-container",
-          {
-            size: "invisible"
-          }
-        );
-      }
+    const appVerifier = window.recaptchaVerifier;
 
-      const appVerifier = window.recaptchaVerifier;
+    const result = await signInWithPhoneNumber(
+      auth,
+      phone,
+      appVerifier
+    );
 
-      const result = await signInWithPhoneNumber(
-        auth,
-        phone,
-        appVerifier
-      );
+    window.confirmationResult = result; // IMPORTANT backup
+    setConfirmationResult(result);
 
-      setConfirmationResult(result);
-      alert("OTP Sent");
-
+    alert("OTP Sent");
     } catch (error) {
       console.log(error);
       alert(error.message);
     }
   };
-
+  window.confirmationResult = result;
   // =========================
   // VERIFY OTP + LOGIN
   // =========================
   const verifyOTP = async () => {
     try {
+      const confirmation = confirmationResult || window.confirmationResult;
+        console.log("confirmationResult:", confirmationResult);
+    console.log("OTP entered:", otp);
 
-      const result = await confirmationResult.confirm(otp);
+      if (!confirmation) {
+        alert("Session expired. Please request OTP again.");
+        return;
+      }
+
+      const result = await confirmation.confirm(otp);
 
       const user = result.user;
-
       const token = await user.getIdToken();
 
-      // =========================
-      // SYNC USER TO BACKEND (MongoDB)
-      // =========================
-      await axios.post(
-        `${API_URL}/api/user/sync`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      // =========================
-      // STORE DATA
-      // =========================
       localStorage.setItem("token", token);
       localStorage.setItem(
         "user",
-        JSON.stringify({
-          phone: user.phoneNumber
-        })
+        JSON.stringify({ phone: user.phoneNumber })
       );
 
       alert("Login Success");
-
-      // =========================
-      // REDIRECT
-      // =========================
       window.location.href = "/dashboard";
 
     } catch (error) {
-      console.log(error);
-      alert("Invalid OTP");
+      console.log("OTP ERROR:", error.code, error.message);
+
+      // THIS is key for debugging
+      if (error.code === "auth/invalid-verification-code") {
+        alert("Wrong OTP entered");
+      } else if (error.code === "auth/session-expired") {
+        alert("OTP expired. Request again.");
+      } else {
+        alert(error.message);
+      }
     }
   };
 
