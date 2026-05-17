@@ -19,12 +19,11 @@ const app = initializeApp(firebaseConfig);
 
 export default app;*/
 
-import { initializeApp }
-from "firebase/app";
+import { initializeApp } from "firebase/app";
 
 const firebaseConfig = {
 
-  apiKey: "IzaSyAi1OEtZucorqurP1G6IStqM8xGZUJK-9M",
+  apiKey: "AIzaSyAi1OEtZucorqurP1G6IStqM8xGZUJK-9M",
 
   authDomain:
     "prescriptionapp-495417.firebaseapp.com",
