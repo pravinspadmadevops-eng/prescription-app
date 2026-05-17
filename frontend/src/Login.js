@@ -19,13 +19,12 @@ export default function Login() {
   // SEND OTP
   // =========================
   const sendOTP = async () => {
-    try {
+  try {
     if (!phone.startsWith("+")) {
-      alert("Use +91XXXXXXXXXX format");
+      alert("Enter number with +91...");
       return;
     }
 
-    // IMPORTANT: destroy old verifier
     if (window.recaptchaVerifier) {
       window.recaptchaVerifier.clear();
       window.recaptchaVerifier = null;
@@ -47,16 +46,18 @@ export default function Login() {
       appVerifier
     );
 
-    window.confirmationResult = result; // IMPORTANT backup
+    // ✅ THIS is correct (result is now defined)
     setConfirmationResult(result);
+    window.confirmationResult = result;
 
     alert("OTP Sent");
-    } catch (error) {
-      console.log(error);
-      alert(error.message);
-    }
-  };
-  window.confirmationResult = result;
+
+  } catch (error) {
+    console.log(error);
+    alert(error.message);
+  }
+};
+
   // =========================
   // VERIFY OTP + LOGIN
   // =========================
